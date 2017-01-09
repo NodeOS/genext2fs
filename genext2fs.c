@@ -36,8 +36,8 @@
 // 	28 Jun 2001	Bugfix: getcwd differs for Solaris/GNU	mike@sowbug.com
 // 	 8 Mar 2002	Bugfix: endianness swap of x-indirects
 // 	23 Mar 2002	Bugfix: test for IFCHR or IFBLK was flawed
-// 	10 Oct 2002	Added comments,makefile targets,	vsundar@ixiacom.com    
-// 			endianess swap assert check.  
+// 	10 Oct 2002	Added comments,makefile targets,	vsundar@ixiacom.com
+// 			endianess swap assert check.
 // 			Copyright (C) 2002 Ixia communications
 // 	12 Oct 2002	Added support for triple indirection	vsundar@ixiacom.com
 // 			Copyright (C) 2002 Ixia communications
@@ -45,9 +45,9 @@
 // 			Copyright (C) 2002 Ixia communications
 // 	 5 Jan 2003	Bugfixes: reserved inodes should be set vsundar@usc.edu
 // 			only in the first group; directory names
-// 			need to be null padded at the end; and 
-// 			number of blocks per group should be a 
-// 			multiple of 8. Updated md5 values. 
+// 			need to be null padded at the end; and
+// 			number of blocks per group should be a
+// 			multiple of 8. Updated md5 values.
 // 	 6 Jan 2003	Erik Andersen <andersee@debian.org> added
 // 			mkfs.jffs2 compatible device table support,
 // 			along with -q, -P, -U
@@ -255,7 +255,7 @@ static int blocksize = 1024;
 
 // Get group inode bitmap (ibm) given the group number
 #define GRP_GET_GROUP_IBM(fs,grp) ( get_blk((fs), get_gd((fs),(grp))->bg_inode_bitmap) )
-		
+
 // Given an inode number find the group it belongs to
 #define GRP_GROUP_OF_INODE(fs,nod) ( ((nod)-1) / (fs)->sb.s_inodes_per_group)
 
@@ -269,7 +269,7 @@ static int blocksize = 1024;
 
 // Given a block number find the group it belongs to
 #define GRP_GROUP_OF_BLOCK(fs,blk) ( ((blk)-1) / (fs)->sb.s_blocks_per_group)
-	
+
 //Given a block number get the block bitmap that covers it
 #define GRP_GET_BLOCK_BITMAP(fs,blk) \
 	( GRP_GET_GROUP_BBM((fs),GRP_GROUP_OF_BLOCK((fs),(blk))) )
@@ -330,14 +330,14 @@ portable_snprintf(char *str, size_t n, const char *fmt, ...)
 // on pipes etc. However, add2fs_from_file() only calls getline() for
 // regular files, so a larger rchunk and backward seeks are okay.
 
-ssize_t 
+ssize_t
 getdelim(char **lineptr, size_t *n, int delim, FILE *stream)
 {
 	char *p;                    // reads stored here
 	size_t const rchunk = 512;  // number of bytes to read
 	size_t const mchunk = 512;  // number of extra bytes to malloc
 	size_t m = rchunk + 1;      // initial buffer size
-	
+
 	if (*lineptr) {
 		if (*n < m) {
 			*lineptr = (char*)realloc(*lineptr, m);
@@ -548,17 +548,17 @@ typedef uint8 *block;
 
 /* blockwalker fields:
    The blockwalker is used to access all the blocks of a file (including
-   the indirection blocks) through repeated calls to walk_bw.  
-   
+   the indirection blocks) through repeated calls to walk_bw.
+
    bpdir -> index into the inode->i_block[]. Indicates level of indirection.
    bnum -> total number of blocks so far accessed. including indirection
            blocks.
    bpind,bpdind,bptind -> index into indirection blocks.
-   
+
    bpind, bpdind, bptind do *NOT* index into single, double and triple
-   indirect blocks resp. as you might expect from their names. Instead 
+   indirect blocks resp. as you might expect from their names. Instead
    they are in order the 1st, 2nd & 3rd index to be used
-   
+
    As an example..
    To access data block number 70000:
         bpdir: 15 (we are doing triple indirection)
@@ -567,11 +567,11 @@ typedef uint8 *block;
         bptind: 99 ( index into the single indirection block)
 	70000 = 12 + 256 + 256*256 + 16*256 + 100 (indexing starts from zero)
 
-   So,for double indirection bpind will index into the double indirection 
+   So,for double indirection bpind will index into the double indirection
    block and bpdind into the single indirection block. For single indirection
    only bpind will be used.
 */
-   
+
 typedef struct
 {
 	uint32 bnum;
@@ -616,7 +616,7 @@ struct hdlink_s
 	uint32	dst_nod;
 };
 
-struct hdlinks_s 
+struct hdlinks_s
 {
 	int32 count;
 	struct hdlink_s *hdl;
@@ -937,7 +937,7 @@ alloc_nod(filesystem *fs)
 		if (get_gd(fs, grp)->bg_free_inodes_count < avefreei ||
 		    get_gd(fs, grp)->bg_free_inodes_count == 0)
 			continue;
-		if (!best_group || 
+		if (!best_group ||
 			get_gd(fs, grp)->bg_free_blocks_count > get_gd(fs, best_group)->bg_free_blocks_count)
 			best_group = grp;
 	}
@@ -997,7 +997,7 @@ walk_bw(filesystem *fs, uint32 nod, blockwalker *bw, int32 *create, uint32 hole)
 			(*create)--;
 			extend = 1;
 		}
-		else	
+		else
 			return WALK_END;
 	}
 	// first direct block
@@ -1104,7 +1104,7 @@ walk_bw(filesystem *fs, uint32 nod, blockwalker *bw, int32 *create, uint32 hole)
 	/* Just starting triple indirection. Allocate the indirection
 	   blocks and the first data block
 	 */
-	else if (bw->bpdir == EXT2_DIND_BLOCK) 
+	else if (bw->bpdir == EXT2_DIND_BLOCK)
 	{
 	  	bw->bnum += 3;
 		bw->bpdir = EXT2_TIND_BLOCK;
@@ -1135,7 +1135,7 @@ walk_bw(filesystem *fs, uint32 nod, blockwalker *bw, int32 *create, uint32 hole)
 	/* Still processing a single indirect block down the indirection
 	   chain.Allocate a data block for it
 	 */
-	else if ( (bw->bpdir == EXT2_TIND_BLOCK) && 
+	else if ( (bw->bpdir == EXT2_TIND_BLOCK) &&
 		  (bw->bptind < BLOCKSIZE/4 -1) )
 	{
 		bw->bptind++;
@@ -1148,7 +1148,7 @@ walk_bw(filesystem *fs, uint32 nod, blockwalker *bw, int32 *create, uint32 hole)
 		if(reduce) // free block
 			free_blk(fs, *bkref);
 	}
-	/* Finished processing a single indirect block. But still in the 
+	/* Finished processing a single indirect block. But still in the
 	   same double indirect block. Allocate new single indirect block
 	   for it and a data block
 	 */
@@ -1174,7 +1174,7 @@ walk_bw(filesystem *fs, uint32 nod, blockwalker *bw, int32 *create, uint32 hole)
 	/* Finished processing a double indirect block. Allocate the next
 	   double indirect block and the single,data blocks for it
 	 */
-	else if ( (bw->bpdir == EXT2_TIND_BLOCK) && 
+	else if ( (bw->bpdir == EXT2_TIND_BLOCK) &&
 		  (bw->bpind < BLOCKSIZE/4 - 1) )
 	{
 		bw->bnum += 2;
@@ -1199,7 +1199,7 @@ walk_bw(filesystem *fs, uint32 nod, blockwalker *bw, int32 *create, uint32 hole)
 			free_blk(fs, *bkref);
 	}
 	else
-		error_msg_and_die("file too big !"); 
+		error_msg_and_die("file too big !");
 	/* End change for walking triple indirection */
 
 	if(*bkref)
@@ -1502,7 +1502,7 @@ get_mode(struct stat *st)
     <path>	<type> <mode>	<uid>	<gid>	<major>	<minor>	<start>	<inc>	<count>
     /dev/mem     c    640       0       0         1       1       0     0         -
 
-    type can be one of: 
+    type can be one of:
 	f	A regular file
 	d	Directory
 	c	Character special device file
@@ -1649,7 +1649,7 @@ add2fs_from_file(filesystem *fs, uint32 this_nod, FILE * fh, uint32 fs_timestamp
 	}
 	if (line)
 		free(line);
-	if (path) 
+	if (path)
 		free(path);
 	if (path2)
 		free(path2);
@@ -1771,7 +1771,7 @@ add2fs_from_dir(filesystem *fs, uint32 this_nod, int squash_uids, int squash_per
 			}
 			if (save_nod) {
 				if (hdlinks.count == hdlink_cnt) {
-					if ((hdlinks.hdl = 
+					if ((hdlinks.hdl =
 						 realloc (hdlinks.hdl, (hdlink_cnt + HDLINK_CNT) *
 								  sizeof (struct hdlink_s))) == NULL) {
 						error_msg_and_die("Not enough memory");
@@ -1827,12 +1827,12 @@ swap_goodblocks(filesystem *fs, inode *nod)
 	/* Adding support for triple indirection */
 	b = (uint32*)get_blk(fs,nod->i_block[EXT2_TIND_BLOCK]);
 	for(i=0;i < BLOCKSIZE/4 && !done ; i++) {
-		b2 = (uint32*)get_blk(fs,b[i]); 
+		b2 = (uint32*)get_blk(fs,b[i]);
 		for(j=0; j<BLOCKSIZE/4;j++) {
-			if (nblk > ( EXT2_IND_BLOCK + BLOCKSIZE/4 + 
-				     (BLOCKSIZE/4)*(BLOCKSIZE/4) + 
-				     i*(BLOCKSIZE/4)*(BLOCKSIZE/4) + 
-				     j*(BLOCKSIZE/4)) ) 
+			if (nblk > ( EXT2_IND_BLOCK + BLOCKSIZE/4 +
+				     (BLOCKSIZE/4)*(BLOCKSIZE/4) +
+				     i*(BLOCKSIZE/4)*(BLOCKSIZE/4) +
+				     j*(BLOCKSIZE/4)) )
 			  swap_block(get_blk(fs,b2[j]));
 			else {
 			  done = 1;
@@ -1873,13 +1873,13 @@ swap_badblocks(filesystem *fs, inode *nod)
 	b = (uint32*)get_blk(fs,nod->i_block[EXT2_TIND_BLOCK]);
 	swap_block((uint8 *)b);
 	for(i=0;i < BLOCKSIZE/4 && !done ; i++) {
-		b2 = (uint32*)get_blk(fs,b[i]); 
+		b2 = (uint32*)get_blk(fs,b[i]);
 		swap_block((uint8 *)b2);
 		for(j=0; j<BLOCKSIZE/4;j++) {
-			if (nblk > ( EXT2_IND_BLOCK + BLOCKSIZE/4 + 
-				     (BLOCKSIZE/4)*(BLOCKSIZE/4) + 
-				     i*(BLOCKSIZE/4)*(BLOCKSIZE/4) + 
-				     j*(BLOCKSIZE/4)) ) 
+			if (nblk > ( EXT2_IND_BLOCK + BLOCKSIZE/4 +
+				     (BLOCKSIZE/4)*(BLOCKSIZE/4) +
+				     i*(BLOCKSIZE/4)*(BLOCKSIZE/4) +
+				     j*(BLOCKSIZE/4)) )
 			  swap_block(get_blk(fs,b2[j]));
 			else {
 			  done = 1;
@@ -1965,7 +1965,7 @@ init_fs(int nbblocks, int nbinodes, int nbresrvd, int holes,
 	uint32 j;
 	uint8 *bbm,*ibm;
 	inode *itab0;
-	
+
 	if(nbresrvd < 0)
 		error_msg_and_die("reserved blocks value is invalid. Note: options have changed, see --help or the man page.");
 	if(nbinodes < EXT2_FIRST_INO - 1 + (nbresrvd ? 1 : 0))
@@ -2056,10 +2056,10 @@ init_fs(int nbblocks, int nbinodes, int nbresrvd, int holes,
 		//non-filesystem blocks
 		for(j = get_gd(fs, i)->bg_free_blocks_count
 		        + overhead_per_group + 1; j <= BLOCKSIZE * 8; j++)
-			allocate(bbm, j); 
+			allocate(bbm, j);
 		//system blocks
 		for(j = 1; j <= overhead_per_group; j++)
-			allocate(bbm, j); 
+			allocate(bbm, j);
 
 		/* Inode bitmap */
 		ibm = GRP_GET_GROUP_IBM(fs, i);
@@ -2079,7 +2079,7 @@ init_fs(int nbblocks, int nbinodes, int nbresrvd, int holes,
 	get_gd(fs, 0)->bg_free_inodes_count--;
 	get_gd(fs, 0)->bg_used_dirs_count = 1;
 	itab0 = (inode *)get_blk(fs, get_gd(fs,0)->bg_inode_table);
-	itab0[EXT2_ROOT_INO-1].i_mode = FM_IFDIR | FM_IRWXU | FM_IRGRP | FM_IROTH | FM_IXGRP | FM_IXOTH; 
+	itab0[EXT2_ROOT_INO-1].i_mode = FM_IFDIR | FM_IRWXU | FM_IRGRP | FM_IROTH | FM_IXGRP | FM_IXOTH;
 	itab0[EXT2_ROOT_INO-1].i_ctime = fs_timestamp;
 	itab0[EXT2_ROOT_INO-1].i_mtime = fs_timestamp;
 	itab0[EXT2_ROOT_INO-1].i_atime = fs_timestamp;
@@ -2109,7 +2109,7 @@ init_fs(int nbblocks, int nbinodes, int nbresrvd, int holes,
 		/* We run into problems with e2fsck if directory lost+found grows
 		 * bigger than this. Need to find out why this happens - sundar
 		 */
-		if (fs->sb.s_r_blocks_count > fs->sb.s_blocks_count * MAX_RESERVED_BLOCKS ) 
+		if (fs->sb.s_r_blocks_count > fs->sb.s_blocks_count * MAX_RESERVED_BLOCKS )
 			fs->sb.s_r_blocks_count = fs->sb.s_blocks_count * MAX_RESERVED_BLOCKS;
 		for(i = 1; i < fs->sb.s_r_blocks_count; i++)
 			extend_blk(fs, nod, b, 1);
@@ -2124,7 +2124,7 @@ init_fs(int nbblocks, int nbinodes, int nbresrvd, int holes,
 	// options for me
 	if(holes)
 		fs->sb.s_reserved[200] |= OP_HOLES;
-	
+
 	return fs;
 }
 
@@ -2338,7 +2338,7 @@ print_inode(filesystem *fs, uint32 nod)
 			s = "undelete directory";
 			break;
 		default:
-			s = (nod >= EXT2_FIRST_INO) ? "normal" : "unknown reserved"; 
+			s = (nod >= EXT2_FIRST_INO) ? "normal" : "unknown reserved";
 	}
 	printf("inode %d (%s, %d links): ", nod, s, get_nod(fs, nod)->i_links_count);
 	if(!allocated(GRP_GET_INODE_BITMAP(fs,nod), GRP_IBM_OFFSET(fs,nod)))
@@ -2691,7 +2691,7 @@ main(int argc, char **argv)
 	{
 		if(reserved_frac == -1)
 			nbresrvd = nbblocks * RESERVED_BLOCKS;
-		else 
+		else
 			nbresrvd = nbblocks * reserved_frac;
 
 		stats.ninodes = EXT2_FIRST_INO - 1 + (nbresrvd ? 1 : 0);
@@ -2718,7 +2718,7 @@ main(int argc, char **argv)
 		fs = init_fs(nbblocks, nbinodes, nbresrvd, holes,
 				fs_timestamp, creator_os);
 	}
-	
+
 	populate_fs(fs, dopt, didx, squash_uids, squash_perms, fs_timestamp, NULL);
 
 	if(emptyval) {
