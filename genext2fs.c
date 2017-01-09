@@ -1545,17 +1545,21 @@ add2fs_from_file(filesystem *fs, uint32 this_nod, FILE * fh, uint32 fs_timestamp
 		}
 
 		// `sscanf()` is used twice to allow to have `#` character in the file path
-		if(line[0] == '\n' || line[0] == '#')
-			continue;
-		nbargs = sscanf(line, "%" SCANF_PREFIX "s", SCANF_STRING(path));
-		if(!nbargs)
+		nbargs = sscanf(line, " %" SCANF_PREFIX "s", SCANF_STRING(path));
+		if(nbargs < 1)
 		{
 			error_msg("device table line %d skipped: file path not provided", lineno);
 			continue;
 		}
+		if(path[0] == '#')  // Line is a comment, ignore it
+			continue;
+
+		// Search a `#` at the line after the path (it's a comment, ignore it)
 		char* line2 = line+strlen(path);
 		if((c = strchr(line2, '#')))
 			*c = 0;
+
+		// Fetch the path stat attributes
 		nbargs = sscanf(line2, " %c %lo %lu %lu %lu %lu %lu %lu %lu", &type, &mode,
 										&uid, &gid, &major, &minor, &start, &increment, &count);
 		if(nbargs < 2)
