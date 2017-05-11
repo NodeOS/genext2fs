@@ -1,5 +1,7 @@
 genext2fs
 =========
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/NodeOS/genext2fs.svg)](https://greenkeeper.io/)
 [![Build Status](https://semaphoreci.com/api/v1/nodeos/genext2fs/branches/master/badge.svg)](https://semaphoreci.com/nodeos/genext2fs)
 
 genext2fs generates an ext2 filesystem as a normal (non-root) user.
